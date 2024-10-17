@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POKEMON</title>
+</head>
+<style>
+    body{
+        display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid black;
+    border-radius: 16px;
+    background: linear-gradient(45deg, purple, transparent);
+    }
+</style>
+<body>
+    <h1 id="pokemonName"></h1>
+    <img id="pokemonImage" alt="">
+    <p><strong>Height:</strong> <span id="pokemonHeight"></span></p>
+    <p><strong>Weight:</strong> <span id="pokemonWeight"></span></p>
+    <h2>Abilities</h2>
+    <ul id="abilitiesList"></ul>
+    
+    <script>
+        async function fetchPokemonDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pokemonId = urlParams.get('id');
+
+            try {
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+                const data = await response.json();
+
+                document.getElementById('pokemonName').textContent = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+                document.getElementById('pokemonImage').src = data.sprites.front_default;
+                document.getElementById('pokemonHeight').textContent = data.height / 10 + ' m'; // Convert decimetres to meters
+                document.getElementById('pokemonWeight').textContent = data.weight / 10 + ' kg'; // Convert hectograms to kilograms
+
+                const abilitiesList = document.getElementById('abilitiesList');
+                data.abilities.forEach(ability => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = ability.ability.name.charAt(0).toUpperCase() + ability.ability.name.slice(1);
+                    abilitiesList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error(`Error fetching Pokémon details:`, error);
+            }
+        }
+
+        window.onload = fetchPokemonDetails;
+    </script>
+</body>
+</html>
